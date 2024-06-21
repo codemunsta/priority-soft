@@ -13,3 +13,5 @@ media/*
 .pytest_cache
 /static
 .env
+/users/migrations
+/store/migrations
