@@ -8,10 +8,10 @@ from .managers import CustomUserManager
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    phone = models.CharField(unique=True, max_length=15, null=True, blank=True)
+    phone = models.CharField(unique=True, max_length=20, null=True, blank=True)
     firstname = models.CharField(max_length=50, blank=True)
     lastname = models.CharField(max_length=50, blank=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True, null=True)
 
@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Supplier(models.Model):
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=225)
-    phone = models.CharField(unique=True, max_length=15, null=True, blank=True)
+    phone = models.CharField(unique=True, max_length=20, null=True, blank=True)
     address = models.TextField()
     items = models.ManyToManyField('store.Item', related_name='suppliers')
     created_at = models.DateTimeField(auto_now_add=True, null=True)

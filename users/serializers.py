@@ -13,7 +13,7 @@ class GeneralMessageSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-    phone = serializers.CharField(max_length=15)
+    phone = serializers.CharField(max_length=20)
     firstname = serializers.CharField(max_length=100, required=True)
     lastname = serializers.CharField(max_length=100, required=True)
     password = serializers.CharField(max_length=100, allow_blank=True, trim_whitespace=True, required=True, validators=[validate_password])

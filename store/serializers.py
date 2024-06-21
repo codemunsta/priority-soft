@@ -24,8 +24,16 @@ class ItemCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=225)
     description = serializers.CharField()
     price = serializers.DecimalField(max_digits=17, decimal_places=2)
-    quantity = serializers.IntegerField()
+    quantity = serializers.IntegerField(min_value=0)
     supplier = serializers.UUIDField()
+
+
+class ItemUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = [
+            "id", "name", "description", "price", "quantity"
+        ]
 
 
 class SupplierItemSerializer(serializers.ModelSerializer):

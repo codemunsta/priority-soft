@@ -38,6 +38,6 @@ class CustomAuthentication(authentication.BaseAuthentication):
         if user is not None and user.is_active:
             return user, None
         elif not user.is_active:
-            raise AuthenticationFailed('Unauthenticated')
+            raise AuthenticationFailed('Not authenticated')
         else:
             return None

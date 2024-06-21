@@ -23,7 +23,7 @@ class ItemView(APIView):
                     supplier = Supplier.objects.get(id=supplier_id)
                 except ObjectDoesNotExist:
                     return Response(return_general_message("Invalid Supplier"), status=status.HTTP_404_NOT_FOUND)
-                item_data = self.serializer_class(data)
+                item_data = self.serializer_class(data=data)
                 if item_data.is_valid(raise_exception=True):
                     data = item_data.validated_data
                     item = Item.objects.create(
@@ -38,7 +38,7 @@ class ItemView(APIView):
                         supplier=supplier,
                         registerer=request.user
                     )
-                return Response(return_general_message("Supplier Created..."), status=status.HTTP_201_CREATED)
+                return Response(return_general_message("Item Created..."), status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(return_general_message(str(e)), status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,6 +62,7 @@ class ItemDetailView(APIView):
     authentication_classes = [CustomAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = ItemSerializer
+    serializer_update_class = ItemUpdateSerializer
 
     @swagger_auto_schema(
         responses={200: ItemSerializer(), 404: GeneralMessageSerializer()},
@@ -77,7 +78,7 @@ class ItemDetailView(APIView):
         return Response(serializer, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        request_body=ItemSerializer(),
+        request_body=ItemUpdateSerializer(),
         responses={200: ItemSerializer(), 400: GeneralMessageSerializer(), 404: GeneralMessageSerializer()},
         operation_summary="Update an Item",
         operation_description="update details of a specific item by passing the id of the item along with details to update"
@@ -87,9 +88,12 @@ class ItemDetailView(APIView):
             item = Item.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response(return_general_message("Item not found"), status=status.HTTP_404_NOT_FOUND)
-        data = self.serializer_class(item, data=request.data, partial=True)
+        data = self.serializer_update_class(item, data=request.data, partial=True)
         try:
             if data.is_valid(raise_exception=True):
+                data_ = data.validated_data
+                if data_.get("quantity") and data_.get("quantity") < 0:
+                    return Response(return_general_message("Quantity cannot be less than 0"), status=status.HTTP_404_NOT_FOUND)
                 data.save()
                 return Response(data.data, status=status.HTTP_200_OK)
         except Exception as e:

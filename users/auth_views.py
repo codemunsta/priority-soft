@@ -19,7 +19,7 @@ def create_employee_account(request):
         if serializer.data.get("password") != serializer.data.get("password2"):
             raise ValueError("Password Mismatch")
 
-        user = User.objects.create_staff(
+        user = User.objects.create_user(
             firstname=serializer.data.get('firstname'),
             lastname=serializer.data.get('lastname'),
             email=email,
@@ -49,9 +49,9 @@ def employee_login(request):
     try:
         serializer.is_valid(raise_exception=True)
         email = serializer.data.get("email")
-        user = User.objects.filter(email=email)
+        _user = User.objects.filter(email=email)
 
-        if not user.exists():
+        if not _user.exists():
             raise ValueError("User does not exits")
 
         password = serializer.data.get("password")
@@ -97,8 +97,8 @@ def get_all_employees(request):
 @permission_classes([IsAuthenticated])
 def get_employee(request, pk):
     try:
-        users = User.objects.get(id=pk, is_active=True, is_superuser=False)
+        user = User.objects.get(id=pk, is_active=True, is_superuser=False)
     except ObjectDoesNotExist:
         return Response(return_general_message("User not found"), status=status.HTTP_404_NOT_FOUND)
-    serializer = UserSerializer(users, many=True).data
+    serializer = UserSerializer(user).data
     return Response(serializer, status=status.HTTP_200_OK)
