@@ -6,6 +6,10 @@ ENV PYTHONBUFFERED=1
 
 RUN adduser --disabled-password --gecos '' PrioritySoft
 
+RUN addgroup PrioritySoft wheel
+
+RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 WORKDIR /project
 
 COPY . /project
@@ -26,4 +30,4 @@ RUN mkdir -p /project/static
 
 RUN chown -R PrioritySoft:PrioritySoft /project/static
 
-CMD supervisorctl reread && supervisorctl update && python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && supervisord -c /project/supervisord.conf
+CMD supervisorctl reread && supervisorctl update && python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && supervisord -c /project/supervisord.conf
