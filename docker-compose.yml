@@ -5,7 +5,7 @@ services:
     build: .
     volumes:
       - .:/project
-      - /home/app/priority_soft/static:/project/static
+      - /home/priority_soft/app/priority_soft/static:/project/static
     ports:
       - "8000:8000"
     depends_on:

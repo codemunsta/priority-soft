@@ -18,6 +18,7 @@ class Item(models.Model):
 class ItemSupply(models.Model):
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
     item = models.ForeignKey("store.Item", on_delete=models.CASCADE)
+    quantity_supplied = models.IntegerField(default=0)
     supplier = models.ForeignKey("users.Supplier", null=True, on_delete=models.SET_NULL)
     registerer = models.ForeignKey("users.User", null=True, on_delete=models.SET_NULL)
     date_created = models.DateTimeField(auto_now_add=True)
