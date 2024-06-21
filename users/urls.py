@@ -12,6 +12,6 @@ urlpatterns = [
 
     # Supplier URLs
     path("supplier/", SupplierView.as_view(), name="create_supplier"),
-    path("supplier/<uuid:pk>/", SupplierView.as_view(), name="get_or_update_supplier")
+    path("supplier/<uuid:pk>/", SupplierDetailView.as_view(), name="get_or_update_supplier")
 
 ]
