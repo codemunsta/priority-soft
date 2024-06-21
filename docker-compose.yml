@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/project
+      - /home/priority_soft/app/priority_soft/static:/project/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - test-db
+    image: app:Inventory-Management
+    container_name: inventory-management_latest
+    command: sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && supervisord -c /project/supervisord.conf"
+
+  redis:
+    image: redis:latest
+    container_name: inventory-redis
+    restart: always
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+  test-db:
+    image: postgres:alpine
+    container_name: inventory-management-db
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+       - pgdata:/var/lib/postgresql/data/test
+
+volumes:
+  pgdata:
+  redis-data:

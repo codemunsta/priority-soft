@@ -1,0 +1,5 @@
+/venv
+.cache
+*.md
+.git
+/static
