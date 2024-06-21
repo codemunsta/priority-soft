@@ -36,6 +36,7 @@ class Supplier(models.Model):
     phone = models.CharField(unique=True, max_length=15, null=True, blank=True)
     address = models.TextField()
     items = models.ManyToManyField('store.Item', related_name='suppliers')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return self.name
