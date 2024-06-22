@@ -64,14 +64,25 @@ class ItemSupplySerializer(serializers.ModelSerializer):
         }
 
     def get_supplier(self, instance):
-        return {
-            "id": instance.supplier.id,
-            "name": instance.supplier.name,
-            "contact": instance.supplier.get_contact_info()
-        }
+        if instance.supplier:
+            return {
+                "id": instance.supplier.id,
+                "name": instance.supplier.name,
+                "contact": instance.supplier.get_contact_info()
+            }
+        else:
+            return {
+                "id": "deleted supplier",
+                "name": "deleted supplier",
+                "contact": "deleted supplier",
+            }
 
     def get_registerer(self, instance):
         return {
             "id": instance.registerer.id,
             "name": instance.registerer.get_username()
         }
+
+
+class SupplyItemSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField(min_value=0)

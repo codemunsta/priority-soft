@@ -128,3 +128,47 @@ def get_items_by_supplier(request, pk):
     response = paginator.get_paginated_response(result_page)
     response.status_code = status.HTTP_200_OK
     return response
+
+
+@swagger_auto_schema(methods=['POST'], responses={200: GeneralMessageSerializer(), 404: GeneralMessageSerializer()})
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_supplier(request, item_id, supplier_id):
+    try:
+        supplier = Supplier.objects.get(id=supplier_id)
+    except ObjectDoesNotExist:
+        return Response(return_general_message("Invalid Supplier Selected"), status=status.HTTP_404_NOT_FOUND)
+    try:
+        item = Item.objects.get(id=item_id)
+    except ObjectDoesNotExist:
+        return Response(return_general_message("Item not found"), status=status.HTTP_404_NOT_FOUND)
+    item.suppliers.add(supplier)
+    return Response(return_general_message("Supplier Added..."), status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(methods=['POST'], request_body=SupplyItemSerializer(), responses={200: GeneralMessageSerializer(), 404: GeneralMessageSerializer()})
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def supply_item(request, item_id, supplier_id):
+    try:
+        supplier = Supplier.objects.get(id=supplier_id)
+    except ObjectDoesNotExist:
+        return Response(return_general_message("Invalid Supplier Selected"), status=status.HTTP_404_NOT_FOUND)
+    try:
+        item = Item.objects.get(id=item_id)
+    except ObjectDoesNotExist:
+        return Response(return_general_message("Item not found"), status=status.HTTP_404_NOT_FOUND)
+    data = request.data
+    if supplier in item.suppliers.all():
+        item.quantity += int(data.get("quantity"))
+        item.save()
+        ItemSupply.objects.create(
+            item=item,
+            quantity_supplied=data.get("quantity"),
+            supplier=supplier,
+            registerer=request.user
+        )
+        return Response(return_general_message("Item Supplied..."), status=status.HTTP_200_OK)
+    else:
+        return Response(return_general_message("Supplier does not provide this item..."), status=status.HTTP_200_OK)
+
